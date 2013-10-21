@@ -27,6 +27,7 @@ module.exports = function (grunt) {
   } catch (e) {}
 
   grunt.initConfig({
+    aws: grunt.file.readJSON('./grunt-aws.json'),
     yeoman: yeomanConfig,
     watch: {
       coffee: {
@@ -258,6 +259,11 @@ module.exports = function (grunt) {
           src: [
             'generated/*'
           ]
+        }, {
+          expand: true,
+          cwd: '<%= yeoman.app %>/bower_components/bootstrap/fonts',
+          dest: '<%= yeoman.dist %>/fonts',
+          src: ['*.{eot,svg,ttf,woff}']
         }]
       },
       styles: {
@@ -313,6 +319,22 @@ module.exports = function (grunt) {
           ]
         }
       }
+    },
+    aws_s3: {
+      options: {
+        accessKeyId: '<%= aws.key %>',
+        secretAccessKey: '<%= aws.secret %>',
+        uploadConcurrency: 5,
+        region: '<%= aws.region %>'
+      },
+      production: {
+        options: {
+          bucket: '<%= aws.bucket %>'
+        },
+        files: [
+          {expand: true, cwd: 'dist/', src: ['**'], dest: ''}
+        ]
+      }
     }
   });
 
@@ -358,5 +380,12 @@ module.exports = function (grunt) {
     'jshint',
     'test',
     'build'
+  ]);
+
+  grunt.registerTask('deploy', [
+    //'jshint',
+    //'test',
+    'build',
+    'aws_s3'
   ]);
 };
