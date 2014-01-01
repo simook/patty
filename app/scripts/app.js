@@ -1,19 +1,16 @@
 'use strict';
 
-angular.module('pattyApp', ['$strap.directives','firebase'])
+angular.module('pattyApp', ['$strap.directives','firebase','ngRoute'])
   .config(function ($routeProvider) {
     $routeProvider
-      //.when('/', {
-      //  templateUrl: 'views/main.html',
-      //  controller: 'MainCtrl',
-      //  resolve: {auth:'Auth'}
-      //})
-      .when('/search', {
+      .when('/', {
         templateUrl: 'views/search/index.html',
         controller: 'SearchIndexCtrl',
         resolve: {
-          auth:'Auth',
-          searches: 'Searches'
+          auth: ['Auth', function (Auth) {
+            return Auth.resolve();
+          }]
+          //searches: 'Searches'
         }
       })
       .when('/search/new', {
@@ -30,7 +27,7 @@ angular.module('pattyApp', ['$strap.directives','firebase'])
         }
       })
       .otherwise({
-        redirectTo: '/search'
+        redirectTo: '/'
       });
   })
-  .constant('Firebase', new Firebase("https://patty.firebaseio.com/"));
+  .constant('FIREBASE', new Firebase("https://patty.firebaseio.com/"));

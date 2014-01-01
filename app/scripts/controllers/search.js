@@ -3,9 +3,7 @@
 var app = angular.module('pattyApp');
 
 app.controller('SearchIndexCtrl', function ($scope, auth, searches, Query) {
-	auth.resolve().then(function(){
-		searches.resolve();
-	});
+	$scope.auth = auth;
 
 	$scope.removeSearch = function(search){
 		Query.remove(search.id);
