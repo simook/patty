@@ -1,43 +1,26 @@
 'use strict';
 var app = angular.module('pattyApp');
 
-app.service('Query', function($rootScope, $http, $routeParams, Firebase, angularFireCollection, $q, angularFire, $location, Yql, $timeout){
-	this.create = function(data){
-		var query = userSearchesRef().push(),
-		data = $.extend({}, angular.copy(data), {url: query.toString(), id: query.name(), created: Date.now()});
-		query.set(data, onComplete);
+app.service('Query', function($firebase, $rootScope, $q, FIREBASE, Yql){
+	var ref = $firebase(FIREBASE);
+	var sitesData = [
+		{id: "craigslist", title: "Craigslist", logo: "images/craigslist_logo.png"}
+	];
+
+	this.resolve = function(auth){
+		return ref.$child('users').$child(auth.id);
 	};
 
-	this.remove = function(id){
-		$rootScope.searches = _.omit($rootScope.searches, id);
-		reset();
+	this.create = function(data, auth, callback){
+		var item = ref.$child('users').$child(auth.user.id).$child('searches').$add();
+		var data = $.extend({}, angular.copy(data), {id: item.name(), created: Date.now()});
+		item.set(data, onComplete(false, callback));
 	};
 
-	this.list = function(){
-		var dfr = $q.defer();
-
-		angularFire(userSearchesRef(), $rootScope, 'searches').then(function(data){
-			dfr.resolve();
-		});
-
-		return dfr.promise;
-	};
-
-	this.check = function(){
-		if($routeParams && $routeParams.search){
-			var search = find($routeParams.search);
-			if(search){
-				$rootScope.selected = search;
-			}
-		}
-	};
-
-	this.run = function(id){
-		var search = find(id);
-
-		runQueries(search).then(function(results){
-			search.results = results;
-			search.resultsCount = _.reduce(results, function(m, r){
+	this.run = function(item){
+		runQueries(item).then(function(results){
+			item.results = results;
+			item.resultsCount = _.reduce(results, function(m, r){
 				if(_.isEmpty(r.results)) return m + 0;
 				return m + r.results.length;
 			}, 0);
@@ -55,9 +38,10 @@ app.service('Query', function($rootScope, $http, $routeParams, Firebase, angular
 		search.resultsCount = false;
 	};
 
-	var reset = function(){
-		$rootScope.selected = false;
-		$location.path('search');
+	this.sites = function(){
+		var dfr = $q.defer();
+		dfr.resolve(sitesData);
+		return dfr.promise;
 	};
 
 	var find = function(id){
@@ -66,28 +50,23 @@ app.service('Query', function($rootScope, $http, $routeParams, Firebase, angular
 		});
 	};
 
-	var onComplete = function(error){
+	var onComplete = function(error, callback){
 		if(error){
 			$rootScope.$broadcast('queryCreate:error', error);
 		} else {
-			reset();
 			$rootScope.$broadcast('queryCreate:success', true);
 		}
-	};
 
-	var userRef = function(){
-		return Firebase.child('users').child($rootScope.authUser.id);
-	};
-
-	var userSearchesRef = function(){
-		return userRef().child('searches');
+		if(typeof callback === 'function'){
+			callback(true);
+		}
 	};
 
 	var runQueries = function(search){
 		var results = [], dfr = $q.defer();
 
 		_.each(mapQueries(search), function(query, index, list){
-			Yql.craigslistSearch(query)
+			Yql[query.site](query)
 			.success(function(data){
 				results.push(resultMeta(query, data));
 			})
@@ -107,9 +86,11 @@ app.service('Query', function($rootScope, $http, $routeParams, Firebase, angular
 	var mapQueries = function(search){
 		var queries = [];
 
-		_.each(search.locations, function(location){
-			_.each(search.items, function(item){
-				queries.push({location:location, query:item.query});
+		_.each(_.keys(search.sites), function(site){
+			_.each(search.locations, function(location){
+				_.each(search.keywords, function(keyword){
+					queries.push({site: site, location: angular.copy(location), keyword: keyword});
+				});
 			});
 		});
 

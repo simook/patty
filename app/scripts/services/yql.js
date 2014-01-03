@@ -2,12 +2,12 @@
 var app = angular.module('pattyApp');
 
 app.service('Yql', function($http){
-	this.craigslistSearch = function(search){
+	this.craigslist = function(search){
 		var params = {
 			callback: 'JSON_CALLBACK',
 			format: 'json',
 			env: 'store://datatables.org/alltableswithkeys',
-			q: yqlQuery(search)
+			q: yqlCraigslistQuery(search)
 		};
 
 		var query = $http.jsonp('http://query.yahooapis.com/v1/public/yql', {params:params});
@@ -15,8 +15,8 @@ app.service('Yql', function($http){
 		return query;
 	};
 
-	var yqlQuery = function(search){
-		return "select * from craigslist.search WHERE location=\"" + search.location + "\" and type=\"sss\" and query=\"" + search.query + "\"";
+	var yqlCraigslistQuery = function(search){
+		return "select * from craigslist.search WHERE location=\"" + search.location.city + "\" and type=\"sss\" and query=\"" + search.keyword + "\"";
 	};
 
 });

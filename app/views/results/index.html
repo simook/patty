@@ -1,0 +1,48 @@
+<div class="row-fluid">
+	<div class="col-md-12">
+		<div class="well">
+			<div class="row">
+
+			</div>
+			<h4>Results</h4>
+		</div>
+		<ul class="nav nav-tabs">
+		  <li ng-repeat="item in list.searches">
+		  	<a href="">
+		  		<span ng-if="item.meta.label" class="list-group-item-heading">
+			    	{{item.meta.label}}
+			    </span>
+			    <span ng-if="!item.meta.label" class="list-group-item-heading">
+			    	Search Query {{$index+1}}
+			    </span>
+		  	</a>
+		  </li>
+		</ul>
+	</div>
+</div>
+
+<div ng-cloak ng-show="selected.results" class="panel panel-default">
+			<div class="panel-heading">
+				<strong>{{selected.resultsCount|number}} Results</strong>
+				<button class="btn btn-default btn-xs pull-right" ng-click="removeResults(selected)"><span class="glyphicon glyphicon-trash"></span></button>
+			</div>
+			<div class="panel-body">
+		  	<div ng-cloak ng-repeat="result in selected.results" ng-hide="result.results" class="alert alert-warning">
+		  		<a class="close" data-dismiss="alert" href="#" aria-hidden="true" ng-click="removeResult(selected, result)">&times;</a>
+		  		<strong>Sorry</strong>
+		  		<p>We did not find any results at <b>{{result.query.site}}</b> for <b>{{result.query.keyword}}</b> in <b>{{result.query.location}}</b>.</p>
+		  	</div>
+		  	<div ng-cloak ng-repeat="result in selected.results" ng-show="result.results" class="list-group">
+				  <a href="{{item.link}}" target="_blank" class="list-group-item" ng-repeat="item in result.results">
+				    <small class="text-muted">{{item.date | date:'shortDate'}}</small>
+				    -
+				    <span class="text-info">{{item.title[0]}}</span>
+				    <small class="pull-right">
+				    	<span class="glyphicon glyphicon-map-marker"></span> {{result.query.location}} 
+				    	-
+				    	<span class="glyphicon glyphicon-search"></span> {{result.query.keyword}}
+				    </small>
+				  </a>
+				</div>
+			</div>
+		</div>

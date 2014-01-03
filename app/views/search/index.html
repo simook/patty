@@ -1,82 +1,114 @@
 <div class="row-fluid">
-	<div class="col-md-3">
-		<div class="well well-sm">
-			<div ng-cloak ng-show="searches" class="list-group">
-			  <a class="list-group-item" ng-repeat="search in searches" href="#/search/{{search.id}}" ng-class="{true:'active'}[selected.id == search.id]">
-			    <h5 class="list-group-item-heading">
-			    	Search Query {{$index+1}}
-			    </h5>
-			    <small class="list-group-item-text text-muted">{{search.created | date:'EEEE, MMMM d,y @ h:mm a'}}</small>
-			  </a>
-			</div>
-			<div ng-cloak ng-hide="searches" class="list-group">
-			  <a class="list-group-item" href="#/search/new">
-			    <h5 class="list-group-item-heading">
-			    	Example search query
-			    </h5>
-			    <small class="list-group-item-text text-muted">Create your first search query.</small>
-			  </a>
-			</div>
-		</div>
-	</div>
-	<div class="col-md-9">
-		<div ng-cloak ng-hide="searches" class="jumbotron">
-      <h3>Hello {{authUser.email}}</h3>
+	<div ng-cloak ng-hide="list.searches">
+		<div class="jumbotron">
+      <h3>Hello {{auth.user.email}}</h3>
       <p>This must be your first time using Patty. Patty allows you to search multiple Craigslist locations for single or multiple items that are for sale.</p>
       <p>After creating a search query, you can select it anytime on the left to run the query.</p>
       <p>
         <a class="btn btn-lg btn-primary" href="#/search/new">Create your first search query</a>
       </p>
     </div>
-		<div ng-cloak ng-show="selected" class="panel panel-default">
-		  <div class="panel-heading">
-		  	<strong>Query</strong>
-		  	<button class="btn btn-default btn-xs pull-right" ng-click="removeSearch(selected)"><span class="glyphicon glyphicon-trash"></span></button>
+	</div>
+	<div ng-cloak ng-show="list.searches" class="col-md-3">
+		<div class="list-group">
+		  <a class="list-group-item" ng-repeat="item in list.searches" href="" ng-click="selectItem(item)" ng-class="{true:'active'}[selected.id == item.id]">
+		    <h5 class="list-group-item-heading">
+		    	Search Query {{$index+1}}
+		    </h5>
+		    <p>{{item.meta.description}}</p>
+		    <small class="list-group-item-text text-muted">Created: {{item.created | date:'EEEE, MMMM d,y @ h:mm a'}}</small>
+		  </a>
+		</div>
+	</div>
+	<div class="col-md-9" ng-cloak ng-show="selected">
+		<div class="page-header">
+	  	<h3>Search Query <small>{{selected.meta.description}}</small></h3>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<small>Created: {{selected.created | date:'EEEE, MMMM d,y @ h:mm a'}}</small>
+  			<button class="btn btn-default" ng-click="deleteItem(selected.id)">Delete Query</button>
+  			<button class="btn btn-default">Edit Query</button>
+  			<button class="btn btn-default" ng-click="runSearch(selected)">Test Query</button>
+			  <div class="form-group" ng-cloak ng-hide="true">
+			    <input type="text" class="form-control" placeholder="e.g. 'Laptops in the Northwest'" ng-model="selected.meta.description">
+			  </div>
 			</div>
-		  <table class="table table-striped table-condensend">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Location</th>
-            <th>Items</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="location in selected.locations">
-            <td>{{$index+1}}</td>
-            <td>{{location}}</td>
-            <td><span class="label label-default" ng-repeat="item in selected.items">{{item.query}}</span> </td>
-          </tr>
-        </tbody>
-      </table>
-		  <div class="panel-footer">
-		  	<small class="text-muted">Created: {{selected.created | date:'EEEE, MMMM d,y @ h:mm a'}}</small>
-		  	<button class="btn btn-primary pull-right" ng-click="runSearch(selected)">Run</button>
-		  	<div class="clearfix"></div>
+		</div>
+		<div class="page-header">
+	  	<h4>Sites</h4>
+		</div>
+		<div class="row">
+			<div class="col-sm-6 col-md-4" ng-repeat="site in selected.sites">
+		    <a class="thumbnail site-thumbnail" href="">
+		      <img ng-src="{{site.logo}}" alt="{{site.title}}">
+		      <div ng-cloak ng-hide="site.logo" class="caption">
+		        <h4>{{site.title}}</h4>
+		      </div>
+		    </a>
 		  </div>
 		</div>
-		<div ng-cloak ng-show="selected.results" class="panel panel-default">
-			<div class="panel-heading">
-				<strong>{{selected.resultsCount|number}} Results</strong>
-				<button class="btn btn-default btn-xs pull-right" ng-click="removeResults(selected)"><span class="glyphicon glyphicon-trash"></span></button>
+		<div class="page-header">
+	  	<h4>Locations</h4>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<ul class="label-list">
+					<li ng-repeat="location in selected.locations">
+						<div class="label label-success">
+							<span ng-if="location.city && location.state">{{location.city}}, {{location.state}}</span>
+							<span ng-if="location.city && !location.state">{{location.city}}</span>
+							<span ng-if="location.state && !location.city">{{location.state}}</span>
+							<button class="close" ng-click="selected.locations.splice($index,1)">&times;</button>
+						</div>
+					</li>
+				</ul>
 			</div>
-			<div class="panel-body">
-		  	<div ng-cloak ng-repeat="result in selected.results" ng-hide="result.results" class="alert alert-warning">
-		  		<a class="close" data-dismiss="alert" href="#" aria-hidden="true" ng-click="removeResult(selected, result)">&times;</a>
-		  		<strong>Hey!</strong>
-		  		<p>We did not find any results in <b>{{result.query.location}}</b> for <b>{{result.query.query}}</b>.</p>
-		  	</div>
-		  	<div ng-cloak ng-repeat="result in selected.results" ng-show="result.results" class="list-group">
-				  <a href="{{item.link}}" target="_blank" class="list-group-item" ng-repeat="item in result.results">
-				    <small class="text-muted">{{item.date | date:'shortDate'}}</small>
-				    -
-				    <span class="text-info">{{item.title[0]}}</span>
-				    <small class="pull-right">
-				    	<span class="glyphicon glyphicon-map-marker"></span> {{result.query.location}} 
-				    	-
-				    	<span class="glyphicon glyphicon-search"></span> {{result.query.query}}
-				    </small>
-				  </a>
+			<div class="col-md-12" ng-cloak ng-hide="true">
+				<form class="form-inline" ng-init="location = {}">
+		  		<div class="form-group">
+		  			<input type="text" class="form-control" placeholder="City" ng-model="location.city" />
+		  		</div>
+		  		<div class="form-group">
+		  			<input type="text" class="form-control" placeholder="State" ng-model="location.state" />
+		  		</div>
+		  		<button type="submit" class="btn btn-default" ng-click="selected.locations.push(location); location = {}"><span class="glyphicon glyphicon-plus-sign"></span> Add Location</button>
+		  	</form>
+			</div>
+		</div>
+		<div class="page-header">
+	  	<h4>Keywords</h4>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<ul class="label-list">
+					<li ng-repeat="keyword in selected.keywords">
+						<div class="label label-success">
+							<span>{{keyword}}</span>
+							<button class="close" ng-click="selected.keywords.splice($index,1)">&times;</button>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div class="col-md-12" ng-cloak ng-hide="true">
+				<form class="form-inline">
+		  		<div class="form-group">
+		  			<input type="text" class="form-control" placeholder="Keyword" ng-model="keyword"/>
+		  		</div>
+		  		<button type="submit" class="btn btn-default" ng-click="selected.keywords.push(keyword); keyword = null"><span class="glyphicon glyphicon-plus-sign"></span> Add Keyword</button>
+		  	</form>
+		  	<hr/>
+			</div>
+		</div>
+		<div class="row" ng-cloak ng-hide="true">
+			<div class="col-md-3 text-left">
+				<div class="form-group">
+					<button class="btn btn-default btn-block btn-lg" ng-click="cancel()">Cancel</button>
+				</div>
+			</div>
+			<div class="col-md-3 text-right col-md-offset-6">
+				<div class="form-group">
+					<button class="btn btn-primary btn-block btn-lg" ng-click="save(data)">Update this Query</button>
 				</div>
 			</div>
 		</div>

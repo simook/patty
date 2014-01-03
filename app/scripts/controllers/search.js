@@ -2,48 +2,58 @@
 
 var app = angular.module('pattyApp');
 
-app.controller('SearchIndexCtrl', function ($scope, auth, searches, Query) {
+app.controller('ResultsIndexCtrl', function ($scope, auth, list, Query) {
 	$scope.auth = auth;
-
-	$scope.removeSearch = function(search){
-		Query.remove(search.id);
-	};
-
-	$scope.removeResults = function(search){
-		Query.removeResults(search.id);
-	};
-
-	$scope.removeResult = function(search, result){
-		Query.removeResult(search.id, result);
-	};
-
-	$scope.runSearch = function(search){
-		Query.run(search.id);
-	};
-
+	$scope.list = list;
 });
 
-app.controller('SearchNewCtrl', function ($scope, auth, Query) {
-	auth.resolve();
+app.controller('SearchIndexCtrl', function ($scope, auth, list, Query) {
+	$scope.auth = auth;
+	$scope.list = list;
 
-	$scope.data = {
-		locations: [],
-		items: [],
-		settings: {}
+	$scope.runSearch = function(item){
+		Query.run(item);
 	};
 
-	$scope.currentStepValue = 1;
-
-	$scope.currentStep = {
-		if: function(step){
-			return ($scope.currentStepValue === step);
-		},
-		is: function(step){
-			$scope.currentStepValue = step;
-		}
+	$scope.selectItem = function(item){
+		$scope.selected = item;
 	};
 
-	$scope.submit = function(){
-		Query.create($scope.data);
+	$scope.deleteItem = function(id){
+		list.$remove('searches/' + id);
+		$scope.selected = null;
 	};
+});
+
+app.controller('SearchNewCtrl', function ($scope, $location, auth, sites, Query) {
+	$scope.auth = auth;
+	$scope.sites = sites;
+
+	$scope.save = function(data){
+		Query.create(data, auth, function(){
+			//$location.path('/search');
+		});
+	};
+
+	$scope.$on('queryCreate:success', function(value){
+		$location.path('/search');
+	});
+});
+
+app.controller('SessionCtrl', function ($scope, $location, auth) {
+	$scope.auth = auth;
+
+  $scope.$on("$firebaseAuth:login", function(e, user) {
+  	$location.path('/search');
+	});
+});
+
+app.controller('NavCtrl', function ($scope, $location, Auth) {
+	Auth.resolve().then(function(data){
+		$scope.auth = data;
+	});
+
+	$scope.$on("$firebaseAuth:logout", function(e, user) {
+  	$location.path('/');
+	});
 });

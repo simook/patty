@@ -13,6 +13,7 @@
 
     <!-- build:css styles/main.css -->
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="styles/main.css" />
     <!-- endbuild -->
 </head>
   <body ng-app="pattyApp">
@@ -36,51 +37,25 @@
         <a class="navbar-brand" href="#">Patty</a>
       </div>
 
-      <div class="collapse navbar-collapse navbar-ex1-collapse">
-        <ul ng-cloak ng-show="authUser" class="nav navbar-nav">
-          <li><a href="/#/search">Search</a></li>
+      <div class="collapse navbar-collapse navbar-ex1-collapse" ng-controller="NavCtrl">
+        <ul ng-cloak ng-show="auth.user" class="nav navbar-nav">
+          <li><a href="/#/search">Queries</a></li>
+          <li><a href="/#/results">Results</a></li>
         </ul>
-        <form ng-cloak ng-show="authUser" class="navbar-form navbar-left">
-          <a type="submit" class="btn btn-info" href="/#/search/new">New Query</a>
-        </form>
-        <ul ng-cloak ng-show="authUser" class="nav navbar-nav navbar-right">
+        <ul ng-cloak ng-show="auth.user" class="nav navbar-nav navbar-right">
+          <form ng-cloak ng-show="auth.user" class="navbar-form navbar-left">
+            <a type="submit" class="btn btn-info" href="/#/search/new">New Search</a>
+          </form>
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{authUser.email}} <b class="caret"></b></a>
+            <a href="" class="dropdown-toggle" data-toggle="dropdown">{{auth.user.email}} <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li><a href="#" ng-click="logout(authUser)">Logout</a></li>
+              <li><a href="" ng-click="auth.$logout()">Logout</a></li>
             </ul>
           </li>
         </ul>
       </div><!-- /.navbar-collapse -->
     </nav>
-    <div ng-cloak ng-hide="authUser" class="container-fluid" ng-controller="SessionCtrl">
-      <div class="row">
-        <div class="col-md-4 col-md-offset-4">
-          <form role="form">
-            <div class="form-group">
-              <input type="email" class="form-control" placeholder="Enter email" ng-model="user.email" ng-required>
-            </div>
-            <div class="form-group">
-              <input type="password" class="form-control" placeholder="Password" ng-model="user.password" ng-required>
-            </div>
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" ng-model="user.rememberMe"> Keep me logged in
-              </label>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <button type="submit" class="btn btn-info btn-block" ng-click="register(user)">Register</button>
-              </div>
-              <div class="col-md-6">
-                <button type="submit" class="btn btn-success btn-block" ng-click="login(user)">Login</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-    <div ng-cloak ng-show="authUser" class="container-fluid" ng-view=""></div>
+    <div class="container-fluid" ng-view=""></div>
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
      <script>
@@ -116,9 +91,7 @@
     <script src="scripts/app.js"></script>
     <script src="scripts/services/yql.js"></script>
     <script src="scripts/services/query.js"></script>
-    <script src="scripts/factories/search.js"></script>
     <script src="scripts/services/auth.js"></script>
-    <script src="scripts/controllers/main.js"></script>
     <script src="scripts/controllers/search.js"></script>
     <!-- endbuild -->
 </body>
