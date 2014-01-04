@@ -12,9 +12,9 @@ angular.module('pattyApp', ['$strap.directives','firebase','ngRoute','ngResource
           }]
         }
       })
-      .when('/search', {
-        templateUrl: 'views/search/index.html',
-        controller: 'SearchIndexCtrl',
+      .when('/queries', {
+        templateUrl: 'views/queries/index.html',
+        controller: 'QueryIndexCtrl',
         resolve: {
           auth: ['Auth', function (Auth) {
             return Auth.resolve();
@@ -37,12 +37,17 @@ angular.module('pattyApp', ['$strap.directives','firebase','ngRoute','ngResource
             return Auth.user().then(function(data){
               return Query.resolve(data);
             });
+          }],
+          settings: ['Auth','Settings', function (Auth, Settings) {
+            return Auth.user().then(function(data){
+              return Settings.resolve(data);
+            });
           }]
         }
       })
-      .when('/search/new', {
-        templateUrl: 'views/search/new.html',
-        controller: 'SearchNewCtrl',
+      .when('/queries/new', {
+        templateUrl: 'views/queries/new.html',
+        controller: 'QueryNewCtrl',
         resolve: {
           auth: ['Auth', function (Auth) {
             return Auth.resolve();

@@ -1,48 +1,69 @@
 <div class="row-fluid">
-	<div class="col-md-12">
-		<div class="well">
-			<div class="row">
-
-			</div>
-			<h4>Results</h4>
+	<div ng-cloak ng-hide="settings.interval" class="col-md-8 col-md-offset-2">
+		<div class="page-header">
+	  	<h3>Before we can show you results, please do the following:</h3>
 		</div>
-		<ul class="nav nav-tabs">
-		  <li ng-repeat="item in list.searches">
-		  	<a href="">
-		  		<span ng-if="item.meta.label" class="list-group-item-heading">
-			    	{{item.meta.label}}
-			    </span>
-			    <span ng-if="!item.meta.label" class="list-group-item-heading">
-			    	Search Query {{$index+1}}
-			    </span>
-		  	</a>
-		  </li>
-		</ul>
+		<div class="row form-group" ng-init="interval = {}; interval.power = 1; interval.selected = 'Hour'; interval.ms = 3600000">
+			<div class="col-md-10">
+				<h4>First, how often would you want to see new results?</h4>
+				<small class="text-muted">Default is every hour.</small>
+			</div>
+			<div class="col-md-2">
+			  <div class="input-group">
+		      <input type="number" class="form-control" ng-model="interval.power"/>
+		      <div class="input-group-btn">
+		        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{interval.selected}} <span class="caret"></span></button>
+		        <ul class="dropdown-menu pull-right">
+		          <li><a href="" ng-click="interval.selected = 'Minute'; interval.ms = 60000">Minute</a></li>
+		          <li><a href="" ng-click="interval.selected = 'Hour'; interval.ms = 3600000">Hour</a></li>
+		          <li><a href="" ng-click="interval.selected = 'Day'; interval.ms = 86400000">Day</a></li>
+		        </ul>
+		      </div><!-- /btn-group -->
+		    </div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12 text-right">
+				<button class="btn btn-primary" ng-click="saveSetting('interval', calculateDelay(interval))">Save Setting</button>
+			</div>
+		</div>
 	</div>
-</div>
-
-<div ng-cloak ng-show="selected.results" class="panel panel-default">
+	<div class="col-md-12">
+		<div class="page-header">
+			<h3>
+				{{resultsCount}} results
+				<ng-pluralize count="queryCount" when="{
+					'0':'because you haven\'t created a query yet',
+					'1':'for 1 Query',
+					'other':'for {} Queries'
+				}"></ng-pluralize> 
+				<small>Next search will be at {{nextTime|date:'mediumDate'}}, {{nextTime|date:'mediumTime'}}</small>
+			</h3>
+		</div>
+		<div ng-cloak ng-show="item.meta.enabled && item.results" ng-repeat="item in list.searches" class="panel panel-default">
 			<div class="panel-heading">
-				<strong>{{selected.resultsCount|number}} Results</strong>
-				<button class="btn btn-default btn-xs pull-right" ng-click="removeResults(selected)"><span class="glyphicon glyphicon-trash"></span></button>
+				{{item.resultsCount|number}} results from <span ng-repeat="site in item.sites" class="label label-default">{{site.title}}</span> at {{item.created|date:'mediumTime'}}
+				<button class="btn btn-default btn-xs pull-right" ng-click="removeResults(item)"><span class="glyphicon glyphicon-trash"></span></button>
 			</div>
 			<div class="panel-body">
-		  	<div ng-cloak ng-repeat="result in selected.results" ng-hide="result.results" class="alert alert-warning">
-		  		<a class="close" data-dismiss="alert" href="#" aria-hidden="true" ng-click="removeResult(selected, result)">&times;</a>
+		  	<div ng-cloak ng-repeat="result in item.results" ng-hide="result.results" class="alert alert-warning">
+		  		<a class="close" data-dismiss="alert" href="#" aria-hidden="true" ng-click="removeResult(item, result)">&times;</a>
 		  		<strong>Sorry</strong>
 		  		<p>We did not find any results at <b>{{result.query.site}}</b> for <b>{{result.query.keyword}}</b> in <b>{{result.query.location}}</b>.</p>
 		  	</div>
-		  	<div ng-cloak ng-repeat="result in selected.results" ng-show="result.results" class="list-group">
+		  	<div ng-cloak ng-repeat="result in item.results" ng-show="result.results" class="list-group">
 				  <a href="{{item.link}}" target="_blank" class="list-group-item" ng-repeat="item in result.results">
 				    <small class="text-muted">{{item.date | date:'shortDate'}}</small>
 				    -
 				    <span class="text-info">{{item.title[0]}}</span>
 				    <small class="pull-right">
-				    	<span class="glyphicon glyphicon-map-marker"></span> {{result.query.location}} 
+				    	<i class="fa fa-map-marker"></i> {{result.query.location}} 
 				    	-
-				    	<span class="glyphicon glyphicon-search"></span> {{result.query.keyword}}
+				    	<i class="fa fa-search"></i> {{result.query.keyword}}
 				    </small>
 				  </a>
 				</div>
 			</div>
 		</div>
+	</div>
+</div>

@@ -18,12 +18,13 @@ app.service('Query', function($firebase, $rootScope, $q, FIREBASE, Yql){
 	};
 
 	this.run = function(item){
-		runQueries(item).then(function(results){
+		return runQueries(item).then(function(results){
 			item.results = results;
 			item.resultsCount = _.reduce(results, function(m, r){
 				if(_.isEmpty(r.results)) return m + 0;
 				return m + r.results.length;
 			}, 0);
+			return item;
 		});
 	};
 
@@ -42,12 +43,6 @@ app.service('Query', function($firebase, $rootScope, $q, FIREBASE, Yql){
 		var dfr = $q.defer();
 		dfr.resolve(sitesData);
 		return dfr.promise;
-	};
-
-	var find = function(id){
-		return _.find($rootScope.searches, function(search){
-			return (search.id === id);
-		});
 	};
 
 	var onComplete = function(error, callback){

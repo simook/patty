@@ -27,7 +27,6 @@ module.exports = function (grunt) {
   } catch (e) {}
 
   grunt.initConfig({
-    aws: grunt.file.readJSON('./grunt-aws.json'),
     yeoman: yeomanConfig,
     watch: {
       styles: {
@@ -229,9 +228,9 @@ module.exports = function (grunt) {
           ]
         }, {
           expand: true,
-          cwd: '<%= yeoman.app %>/bower_components/bootstrap/fonts',
+          cwd: '<%= yeoman.app %>/bower_components/font-awesome/fonts',
           dest: '<%= yeoman.dist %>/fonts',
-          src: ['*.{eot,svg,ttf,woff}']
+          src: ['*.{eot,svg,ttf,woff,otf}']
         }]
       },
       styles: {
@@ -272,7 +271,7 @@ module.exports = function (grunt) {
         'copy:styles'
       ],
       dist: [
-        'less:devlopment',
+        'less:production',
         'copy:styles',
         'imagemin',
         'svgmin',
@@ -307,22 +306,6 @@ module.exports = function (grunt) {
             '<%= yeoman.dist %>/scripts/scripts.js'
           ]
         }
-      }
-    },
-    aws_s3: {
-      options: {
-        accessKeyId: '<%= aws.key %>',
-        secretAccessKey: '<%= aws.secret %>',
-        uploadConcurrency: 5,
-        region: '<%= aws.region %>'
-      },
-      production: {
-        options: {
-          bucket: '<%= aws.bucket %>'
-        },
-        files: [
-          {expand: true, cwd: 'dist/', src: ['**'], dest: ''}
-        ]
       }
     }
   });

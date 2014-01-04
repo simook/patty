@@ -12,7 +12,6 @@
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
     <!-- build:css styles/main.css -->
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="styles/main.css" />
     <!-- endbuild -->
 </head>
@@ -39,12 +38,12 @@
 
       <div class="collapse navbar-collapse navbar-ex1-collapse" ng-controller="NavCtrl">
         <ul ng-cloak ng-show="auth.user" class="nav navbar-nav">
-          <li><a href="/#/search">Queries</a></li>
+          <li><a href="/#/queries">Queries</a></li>
           <li><a href="/#/results">Results</a></li>
         </ul>
         <ul ng-cloak ng-show="auth.user" class="nav navbar-nav navbar-right">
           <form ng-cloak ng-show="auth.user" class="navbar-form navbar-left">
-            <a type="submit" class="btn btn-info" href="/#/search/new">New Search</a>
+            <a type="submit" class="btn btn-info" href="/#/queries/new">New Query</a>
           </form>
           <li class="dropdown">
             <a href="" class="dropdown-toggle" data-toggle="dropdown">{{auth.user.email}} <b class="caret"></b></a>
@@ -92,7 +91,8 @@
     <script src="scripts/services/yql.js"></script>
     <script src="scripts/services/query.js"></script>
     <script src="scripts/services/auth.js"></script>
-    <script src="scripts/controllers/search.js"></script>
+    <script src="scripts/services/settings.js"></script>
+    <script src="scripts/controllers/patty.js"></script>
     <!-- endbuild -->
 </body>
 </html>

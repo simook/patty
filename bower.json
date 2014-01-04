@@ -13,7 +13,9 @@
     "angular-strap": "~0.7.7",
     "underscore": "~1.5.2",
     "angularfire": "~0.5.0",
-    "angular-route": "~1.2.6"
+    "angular-route": "~1.2.6",
+    "font-awesome": "~4.0.3",
+    "ngprogress": "~1.0.4"
   },
   "devDependencies": {
     "angular-mocks": "1.2.6",
