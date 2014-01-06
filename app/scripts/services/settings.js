@@ -5,7 +5,9 @@ app.service('Settings', function($firebase, $rootScope, $q, FIREBASE){
 	var ref = $firebase(FIREBASE);
 
 	this.resolve = function(auth){
-		return ref.$child('settings').$child(auth.id);
+		var dfr = $q.defer();
+		dfr.resolve(ref.$child('settings').$child(auth.id));
+		return dfr.promise;
 	};
 
 	this.save = function(auth, key, data, callback){

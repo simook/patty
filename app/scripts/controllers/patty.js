@@ -21,9 +21,9 @@ app.controller('ResultsIndexCtrl', function ($scope, $interval, $timeout, auth, 
 
 	$scope.$watch('settings.interval', function(interval){
 		if(!interval){ return false; }
-		$interval($scope.startSearching(), interval);
+		$scope.startSearching();
+		$interval($scope.startSearching, interval);
 	});
-
 
 	$scope.startSearching = function(){
 		console.log('running search');
