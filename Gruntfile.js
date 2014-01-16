@@ -29,17 +29,9 @@ module.exports = function (grunt) {
   grunt.initConfig({
     yeoman: yeomanConfig,
     watch: {
-      coffee: {
-        files: ['<%= yeoman.app %>/scripts/{,*/}*.coffee'],
-        tasks: ['coffee:dist']
-      },
-      coffeeTest: {
-        files: ['test/spec/{,*/}*.coffee'],
-        tasks: ['coffee:test']
-      },
       styles: {
-        files: ['<%= yeoman.app %>/styles/{,*/}*.css'],
-        tasks: ['copy:styles', 'autoprefixer']
+        files: ['<%= yeoman.app %>/styles/{,*/}*.less'],
+        tasks: ['less:development']
       },
       livereload: {
         options: {
@@ -127,30 +119,6 @@ module.exports = function (grunt) {
         'Gruntfile.js',
         '<%= yeoman.app %>/scripts/{,*/}*.js'
       ]
-    },
-    coffee: {
-      options: {
-        sourceMap: true,
-        sourceRoot: ''
-      },
-      dist: {
-        files: [{
-          expand: true,
-          cwd: '<%= yeoman.app %>/scripts',
-          src: '{,*/}*.coffee',
-          dest: '.tmp/scripts',
-          ext: '.js'
-        }]
-      },
-      test: {
-        files: [{
-          expand: true,
-          cwd: 'test/spec',
-          src: '{,*/}*.coffee',
-          dest: '.tmp/spec',
-          ext: '.js'
-        }]
-      }
     },
     // not used since Uglify task does concat,
     // but still available if needed
@@ -258,6 +226,11 @@ module.exports = function (grunt) {
           src: [
             'generated/*'
           ]
+        }, {
+          expand: true,
+          cwd: '<%= yeoman.app %>/bower_components/font-awesome/fonts',
+          dest: '<%= yeoman.dist %>/fonts',
+          src: ['*.{eot,svg,ttf,woff,otf}']
         }]
       },
       styles: {
@@ -267,17 +240,38 @@ module.exports = function (grunt) {
         src: '{,*/}*.css'
       }
     },
+    less: {
+      development: {
+        options: {
+          paths: ["<%= yeoman.app %>"],
+          cleancss: true,
+        },
+        files: {
+          ".tmp/styles/main.css": "<%= yeoman.app %>/styles/main.less"
+        }
+      },
+      production: {
+        options: {
+          paths: ["<%= yeoman.app %>"],
+          cleancss: true,
+          compress: true,
+        },
+        files: {
+          "<%= yeoman.app %>/styles/main.css": "<%= yeoman.app %>/styles/main.less"
+        }
+      }
+    },
     concurrent: {
       server: [
-        'coffee:dist',
+        'less:development',
         'copy:styles'
       ],
       test: [
-        'coffee',
+        'less:development',
         'copy:styles'
       ],
       dist: [
-        'coffee',
+        'less:production',
         'copy:styles',
         'imagemin',
         'svgmin',
@@ -341,6 +335,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build', [
     'clean:dist',
+    'less:production',
     'useminPrepare',
     'concurrent:dist',
     'autoprefixer',
@@ -358,5 +353,12 @@ module.exports = function (grunt) {
     'jshint',
     'test',
     'build'
+  ]);
+
+  grunt.registerTask('deploy', [
+    //'jshint',
+    //'test',
+    'build',
+    'aws_s3'
   ]);
 };

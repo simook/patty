@@ -1,0 +1,98 @@
+<div class="row" ng-init="data = {}">
+	<div class="col-md-8 col-md-offset-2" ng-init="data.meta = {}">
+		<div class="page-header">
+	  	<h3>Describe <small>your new search query to make it unique.</small></h3>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+			  <div class="form-group">
+			    <input type="text" class="form-control" placeholder="e.g. 'Laptops in the Northwest'" ng-model="data.meta.description">
+			  </div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-8 col-md-offset-2" ng-init="data.sites = {}">
+		<div class="page-header">
+	  	<h3>Sites <small>are what will be searched.</small></h3>
+		</div>
+		<div class="row">
+			<div class="col-sm-6 col-md-4" ng-repeat="site in sites">
+		    <a class="thumbnail site-thumbnail" href="" ng-click="data.sites[site.id] = site" ng-class="{true:'active'}[data.sites[site.id] === site]">
+		      <img ng-src="{{site.logo}}" alt="{{site.title}}">
+		      <div ng-cloak ng-hide="site.logo" class="caption">
+		        <h4>{{site.title}}</h4>
+		      </div>
+		    </a>
+		  </div>
+		</div>
+	</div>
+	<div class="col-md-8 col-md-offset-2" ng-init="data.locations = []">
+		<div class="page-header">
+	  	<h3>Locations <small>will limit the results to states, cities, or both.</small></h3>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<ul class="label-list">
+					<li ng-repeat="location in data.locations">
+						<div class="label label-success">
+							<span ng-if="location.city && location.state">{{location.city}}, {{location.state}}</span>
+							<span ng-if="location.city && !location.state">{{location.city}}</span>
+							<span ng-if="location.state && !location.city">{{location.state}}</span>
+							<button class="close" ng-click="data.locations.splice($index,1)">&times;</button>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div class="col-md-12">
+				<form class="form-inline" ng-init="location = {}">
+		  		<div class="form-group">
+		  			<input type="text" class="form-control" placeholder="City" ng-model="location.city" />
+		  		</div>
+		  		<div class="form-group">
+		  			<input type="text" class="form-control" placeholder="State" ng-model="location.state" />
+		  		</div>
+		  		<button type="submit" class="btn btn-default" ng-click="data.locations.push(location); location = {}"><span class="glyphicon glyphicon-plus-sign"></span> Add Location</button>
+		  	</form>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-8 col-md-offset-2" ng-init="data.keywords = []">
+		<div class="page-header">
+	  	<h3>Keywords <small>will be searched for in each site selected and location added.</small></h3>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<ul class="label-list">
+					<li ng-repeat="keyword in data.keywords">
+						<div class="label label-success">
+							<span>{{keyword}}</span>
+							<button class="close" ng-click="data.keywords.splice($index,1)">&times;</button>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div class="col-md-12">
+				<form class="form-inline">
+		  		<div class="form-group">
+		  			<input type="text" class="form-control" placeholder="Keyword" ng-model="keyword"/>
+		  		</div>
+		  		<button type="submit" class="btn btn-default" ng-click="data.keywords.push(keyword); keyword = null"><span class="glyphicon glyphicon-plus-sign"></span> Add Keyword</button>
+		  	</form>
+		  	<hr/>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-3 text-left">
+				<div class="form-group">
+					<button class="btn btn-default" ng-click="cancel()">Cancel</button>
+					<button class="btn btn-default" ng-click="data.meta.enabled = false; save(data)">Save for later</button>
+				</div>
+			</div>
+			<div class="col-md-3 text-right col-md-offset-6">
+				<div class="form-group">
+					<button class="btn btn-primary btn-block btn-lg" ng-click="data.meta.enabled = true; save(data)">Save and Enable</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

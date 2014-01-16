@@ -1,0 +1,82 @@
+<div class="row-fluid">
+	<div ng-cloak ng-hide="list.queries">
+		<div class="jumbotron">
+      <h3>Hello {{auth.user.email}}</h3>
+      <p>This must be your first time using Patty. Patty allows you to search multiple Craigslist locations for single or multiple items that are for sale.</p>
+      <p>After creating a query, you can select it anytime on the left to run the query.</p>
+      <p>
+        <a class="btn btn-lg btn-primary" href="#/queries/new">Create your first query</a>
+      </p>
+    </div>
+	</div>
+	<div class="col-md-12">
+		<div class="page-header">
+			<h3>
+				<ng-pluralize count="queryCount" when="{
+					'0':'No queries exist.',
+					'1':'1 Query',
+					'other':'{} Queries'
+				}"></ng-pluralize>
+				<a href="#/queries/new" class="btn btn-default pull-right">New Query</a>
+			</h3>
+		</div>
+		<table class="table">
+      <thead>
+        <tr>
+          <th>Enabled</th>
+          <th>Sites</th>
+          <th>Locations</th>
+          <th>Keywords</th>
+          <th>Created</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="item in list.queries" ng-class="{true:'success'}[item.meta.enabled]">
+          <td>
+          	<input type="checkbox" ng-model="item.meta.enabled" ng-change="updateList()" />
+          </td>
+          <td>
+          	<ul class="label-list">
+							<li ng-repeat="site in item.sites">
+								<div class="label" ng-class="{true:'label-success', false:'label-default', undefined:'label-default'}[item.meta.enabled]">
+									<span>{{site.title}}</span>
+									<button class="close" ng-click="item.sites[site.id] === undefined; updateList()">&times;</button>
+								</div>
+							</li>
+						</ul>
+          </td>
+          <td>
+          	<ul class="label-list">
+							<li ng-repeat="location in item.locations">
+								<div class="label" ng-class="{true:'label-success', false:'label-default', undefined:'label-default'}[item.meta.enabled]">
+									<span ng-if="location.city && location.state">{{location.city}}, {{location.state}}</span>
+									<span ng-if="location.city && !location.state">{{location.city}}</span>
+									<span ng-if="location.state && !location.city">{{location.state}}</span>
+									<button class="close" ng-click="item.locations.splice($index,1); updateList()">&times;</button>
+								</div>
+							</li>
+						</ul>
+          </td>
+          <td>
+          	<ul class="label-list">
+							<li ng-repeat="keyword in item.keywords">
+								<div class="label" ng-class="{true:'label-success', false:'label-default', undefined:'label-default'}[item.meta.enabled]">
+									<span>{{keyword}}</span>
+									<button class="close" ng-click="item.keywords.splice($index,1); updateList()">&times;</button>
+								</div>
+							</li>
+						</ul>
+          </td>
+          <td>{{item.created|date:'mediumDate'}} at {{item.created|date:'shortTime'}}</td>
+          <td class="text-right">
+          	<div class="btn-group">
+		    			<button class="btn btn-default">Edit</button>
+		    			<button class="btn btn-default" ng-click="deleteItem(item.id)">Delete</button>
+						</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+	</div>
+</div>
