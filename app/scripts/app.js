@@ -17,7 +17,7 @@ angular.module('pattyApp', ['$strap.directives','firebase','ngRoute','ngResource
         controller: 'QueryIndexCtrl',
         resolve: {
           auth: ['Auth', function (Auth) {
-            return Auth.resolve();
+            return Auth.user();
           }],
           list: ['Auth','Query', function (Auth, Query) {
             return Auth.user().then(function(data){
@@ -31,7 +31,7 @@ angular.module('pattyApp', ['$strap.directives','firebase','ngRoute','ngResource
         controller: 'ResultsIndexCtrl',
         resolve: {
           auth: ['Auth', function (Auth) {
-            return Auth.resolve();
+            return Auth.user();
           }],
           list: ['Auth','Query', function (Auth, Query) {
             return Auth.user().then(function(data){
@@ -50,7 +50,7 @@ angular.module('pattyApp', ['$strap.directives','firebase','ngRoute','ngResource
         controller: 'QueryNewCtrl',
         resolve: {
           auth: ['Auth', function (Auth) {
-            return Auth.resolve();
+            return Auth.user();
           }],
           sites: ['Query', function (Query) {
             return Query.sites();
@@ -61,4 +61,5 @@ angular.module('pattyApp', ['$strap.directives','firebase','ngRoute','ngResource
         redirectTo: '/'
       });
   })
-  .constant('FIREBASE', new Firebase("https://patty.firebaseio.com/"));
+  .constant('FIREBASE', new Firebase("https://patty.firebaseio.com/"))
+  .constant('YQL', 'http://query.yahooapis.com/v1/public/yql');

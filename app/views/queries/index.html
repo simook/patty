@@ -1,11 +1,11 @@
 <div class="row-fluid">
-	<div ng-cloak ng-hide="list.searches">
+	<div ng-cloak ng-hide="list.queries">
 		<div class="jumbotron">
       <h3>Hello {{auth.user.email}}</h3>
       <p>This must be your first time using Patty. Patty allows you to search multiple Craigslist locations for single or multiple items that are for sale.</p>
-      <p>After creating a search query, you can select it anytime on the left to run the query.</p>
+      <p>After creating a query, you can select it anytime on the left to run the query.</p>
       <p>
-        <a class="btn btn-lg btn-primary" href="#/queries/new">Create your first search query</a>
+        <a class="btn btn-lg btn-primary" href="#/queries/new">Create your first query</a>
       </p>
     </div>
 	</div>
@@ -32,16 +32,16 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="item in list.searches" ng-class="{true:'success'}[item.meta.enabled]">
+        <tr ng-repeat="item in list.queries" ng-class="{true:'success'}[item.meta.enabled]">
           <td>
-          	<input type="checkbox" ng-model="item.meta.enabled" ng-change="list.$save('searches/' + {{item.id}})"/>
+          	<input type="checkbox" ng-model="item.meta.enabled" ng-change="updateList()" />
           </td>
           <td>
           	<ul class="label-list">
 							<li ng-repeat="site in item.sites">
 								<div class="label" ng-class="{true:'label-success', false:'label-default', undefined:'label-default'}[item.meta.enabled]">
 									<span>{{site.title}}</span>
-									<button class="close" ng-click="item.sites[site.id] === undefined">&times;</button>
+									<button class="close" ng-click="item.sites[site.id] === undefined; updateList()">&times;</button>
 								</div>
 							</li>
 						</ul>
@@ -53,7 +53,7 @@
 									<span ng-if="location.city && location.state">{{location.city}}, {{location.state}}</span>
 									<span ng-if="location.city && !location.state">{{location.city}}</span>
 									<span ng-if="location.state && !location.city">{{location.state}}</span>
-									<button class="close" ng-click="item.locations.splice($index,1)">&times;</button>
+									<button class="close" ng-click="item.locations.splice($index,1); updateList()">&times;</button>
 								</div>
 							</li>
 						</ul>
@@ -63,7 +63,7 @@
 							<li ng-repeat="keyword in item.keywords">
 								<div class="label" ng-class="{true:'label-success', false:'label-default', undefined:'label-default'}[item.meta.enabled]">
 									<span>{{keyword}}</span>
-									<button class="close" ng-click="item.keywords.splice($index,1)">&times;</button>
+									<button class="close" ng-click="item.keywords.splice($index,1); updateList()">&times;</button>
 								</div>
 							</li>
 						</ul>

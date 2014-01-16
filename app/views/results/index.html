@@ -40,7 +40,7 @@
 				<small>Next search will be at {{nextTime|date:'mediumDate'}}, {{nextTime|date:'mediumTime'}}</small>
 			</h3>
 		</div>
-		<div ng-cloak ng-show="item.meta.enabled && item.results" ng-repeat="item in list.searches" class="panel panel-default">
+		<div ng-cloak ng-show="item.meta.enabled && item.results" ng-repeat="item in list.queries" class="panel panel-default">
 			<div class="panel-heading">
 				{{item.resultsCount|number}} results from <span ng-repeat="site in item.sites" class="label label-default">{{site.title}}</span> at {{item.created|date:'mediumTime'}}
 				<button class="btn btn-default btn-xs pull-right" ng-click="removeResults(item)"><span class="glyphicon glyphicon-trash"></span></button>
@@ -53,14 +53,19 @@
 		  	</div>
 		  	<div ng-cloak ng-repeat="result in item.results" ng-show="result.results" class="list-group">
 				  <a href="{{item.link}}" target="_blank" class="list-group-item" ng-repeat="item in result.results">
-				    <small class="text-muted">{{item.date | date:'shortDate'}}</small>
-				    -
-				    <span class="text-info">{{item.title[0]}}</span>
-				    <small class="pull-right">
-				    	<i class="fa fa-map-marker"></i> {{result.query.location}} 
-				    	-
-				    	<i class="fa fa-search"></i> {{result.query.keyword}}
-				    </small>
+				    <div class="row">
+				    	<div class="col-md-8">
+						    <small class="text-muted">{{item.date | date:'shortDate'}}</small>
+						    -
+						    <span class="text-info">{{item.title[0]}}</span>
+						  </div>
+						  <div class="col-md-4 text-right">
+					    	<span class="label label-info" ng-if="result.query.location.city && result.query.location.state"><i class="fa fa-map-marker"></i> {{result.query.location.city}}, {{result.query.location.state}}</span>
+								<span class="label label-info" ng-if="result.query.location.city && !result.query.location.state"><i class="fa fa-map-marker"></i> {{result.query.location.city}}</span>
+								<span class="label label-info" ng-if="result.query.location.state && !result.query.location.city"><i class="fa fa-map-marker"></i> {{result.query.location.state}}</span>
+					    	<span class="label label-info"><i class="fa fa-search"></i> {{result.query.keyword}}</span>
+						  </div>
+						</div>
 				  </a>
 				</div>
 			</div>

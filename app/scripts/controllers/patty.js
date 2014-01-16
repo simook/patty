@@ -6,8 +6,9 @@ app.controller('ResultsIndexCtrl', function ($scope, $interval, $timeout, auth, 
 	$scope.auth = auth;
 	$scope.list = list;
 	$scope.settings = settings;
+	$scope.resultsCount = 0;
 
-	$scope.$watch('list.searches', function(list){
+	$scope.$watch('list.queries', function(list){
 		if(!list){ $scope.queryCount = 0; return false; }
 		
 		$scope.queryCount = _.reduce(_.keys(list), function(count, key){
@@ -28,7 +29,7 @@ app.controller('ResultsIndexCtrl', function ($scope, $interval, $timeout, auth, 
 	$scope.startSearching = function(){
 		console.log('running search');
 		$scope.nextTime = Date.now() + $scope.settings.interval;
-		angular.forEach($scope.list.searches, function(item, key){
+		angular.forEach($scope.list.queries, function(item, key){
 			if(item.meta.enabled) {
 				Query.run(item).then(function(data){
 				});
@@ -50,15 +51,19 @@ app.controller('QueryIndexCtrl', function ($scope, auth, list, Query) {
 	$scope.auth = auth;
 	$scope.list = list;
 
-	$scope.$watch('list.searches', function(list){
+	$scope.$watch('list.queries', function(list){
 		if(!list){ $scope.queryCount = 0; return false; }
 		$scope.queryCount = _.keys(list).length;
 	}, true);
 
 	$scope.deleteItem = function(id){
-		list.$remove('searches/' + id);
+		list.$remove('queries/' + id);
 		$scope.selected = null;
 	};
+
+	$scope.updateList = function(){
+		list.$save('queries');
+	}
 });
 
 app.controller('QueryNewCtrl', function ($scope, $location, auth, sites, Query) {

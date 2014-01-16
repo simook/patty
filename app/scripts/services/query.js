@@ -1,10 +1,11 @@
 'use strict';
 var app = angular.module('pattyApp');
 
-app.service('Query', function($firebase, $rootScope, $q, FIREBASE, Yql){
+app.service('Query', function($firebase, $rootScope, $q, FIREBASE, Yql, Results){
 	var ref = $firebase(FIREBASE);
 	var sitesData = [
-		{id: "craigslist", title: "Craigslist", logo: "images/craigslist_logo.png"}
+		{id: "craigslist", title: "Craigslist", logo: "images/craigslist_logo.png"},
+		{id: "equipmentTrader", title: "Equipment Trader", logo: "images/equipmentTrader_logo.png"}
 	];
 
 	this.resolve = function(auth){
@@ -12,7 +13,7 @@ app.service('Query', function($firebase, $rootScope, $q, FIREBASE, Yql){
 	};
 
 	this.create = function(data, auth, callback){
-		var item = ref.$child('users').$child(auth.user.id).$child('searches').$add();
+		var item = ref.$child('users').$child(auth.id).$child('queries').$add();
 		var data = $.extend({}, angular.copy(data), {id: item.name(), created: Date.now()});
 		item.set(data, onComplete(false, callback));
 	};
@@ -62,13 +63,10 @@ app.service('Query', function($firebase, $rootScope, $q, FIREBASE, Yql){
 
 		_.each(mapQueries(search), function(query, index, list){
 			Yql[query.site](query)
-			.success(function(data){
-				results.push(resultMeta(query, data));
+			.then(function(res){
+				results.push(Results[query.site](query, res.data));
 			})
-			.error(function(data){
-				console.log(data);
-			})
-			.then(function(data){
+			.then(function(res){
 				if(index === (list.length-1)){
 					dfr.resolve(results);
 				}
@@ -90,22 +88,5 @@ app.service('Query', function($firebase, $rootScope, $q, FIREBASE, Yql){
 		});
 
 		return queries;
-	};
-
-	var resultMeta = function(query, data){
-		if(_.isEmpty(data.query.results)){
-			return {
-				query: query,
-				results: false,
-				created: data.query.created
-			}
-		} else {
-			return {
-				query: query,
-				results: data.query.results.RDF.item,
-				link: data.query.results.RDF.link,
-				created: data.query.created
-			};
-		}
 	};
 });
